@@ -14,15 +14,16 @@
     }
 
     .slide-container {
-      width: 100vw;
-      height: 100vh;
       display: flex;
+      flex-direction: column;
       align-items: center;
-      justify-content: center;
+      padding: 40px 20px;
+      gap: 40px;
     }
 
     .slide {
-      display: none;
+      display: flex;
+      flex-direction: column;
       width: 900px;
       height: 560px;
       background: white;
@@ -30,46 +31,43 @@
       padding: 60px 70px;
       position: relative;
       box-shadow: 0 20px 60px rgba(0,0,0,0.4);
-      transform-origin: center center;
+      overflow: hidden;
       flex-shrink: 0;
     }
 
-    .slide.active { display: flex; flex-direction: column; }
+    @media print {
+      * {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
 
-    /* スライドナビゲーション */
-    .nav {
-      position: fixed;
-      bottom: 32px;
-      left: 50%;
-      transform: translateX(-50%);
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      background: rgba(255,255,255,0.15);
-      backdrop-filter: blur(10px);
-      padding: 10px 24px;
-      border-radius: 50px;
-    }
+      @page {
+        size: 900px 560px;
+        margin: 0;
+      }
 
-    .nav button {
-      background: white;
-      border: none;
-      border-radius: 50%;
-      width: 40px;
-      height: 40px;
-      font-size: 18px;
-      cursor: pointer;
-      transition: transform 0.15s;
-    }
+      body { background: white; }
 
-    .nav button:hover { transform: scale(1.1); }
-    .nav button:disabled { opacity: 0.3; cursor: default; transform: none; }
+      .slide-container {
+        padding: 0;
+        gap: 0;
+        background: white;
+      }
 
-    .nav .counter {
-      color: white;
-      font-size: 14px;
-      min-width: 64px;
-      text-align: center;
+      .slide {
+        zoom: 1 !important;
+        box-shadow: none;
+        border-radius: 0;
+        page-break-after: always;
+        break-after: page;
+        page-break-inside: avoid;
+        break-inside: avoid;
+      }
+
+      .slide:last-child {
+        page-break-after: auto;
+        break-after: auto;
+      }
     }
 
     /* スライド共通パーツ */
@@ -95,11 +93,11 @@
       margin-bottom: 20px;
     }
 
-    h1 { font-size: 36px; font-weight: 800; line-height: 1.25; color: #111; }
-    h2 { font-size: 28px; font-weight: 700; color: #111; margin-bottom: 28px; }
+    h1 { font-size: 32px; font-weight: 800; line-height: 1.25; color: #111; }
+    h2 { font-size: 25px; font-weight: 700; color: #111; margin-bottom: 28px; }
 
     .subtitle {
-      font-size: 18px;
+      font-size: 16px;
       color: #666;
       margin-top: 12px;
       line-height: 1.6;
@@ -125,9 +123,9 @@
     .card.orange { border-left-color: #ff6600; background: #fff5f0; }
     .card.purple { border-left-color: #6600cc; background: #f8f0ff; }
 
-    .card-icon { font-size: 28px; margin-bottom: 10px; }
-    .card-title { font-size: 15px; font-weight: 700; color: #111; margin-bottom: 6px; }
-    .card-body { font-size: 13px; color: #555; line-height: 1.6; }
+    .card-icon { font-size: 24px; margin-bottom: 10px; }
+    .card-title { font-size: 13px; font-weight: 700; color: #111; margin-bottom: 6px; }
+    .card-body { font-size: 12px; color: #555; line-height: 1.6; }
 
     /* フロー図 */
     .flow {
@@ -142,7 +140,7 @@
       color: white;
       border-radius: 10px;
       padding: 14px 18px;
-      font-size: 13px;
+      font-size: 12px;
       font-weight: 600;
       text-align: center;
       line-height: 1.4;
@@ -155,7 +153,7 @@
 
     .flow-arrow {
       color: #aaa;
-      font-size: 22px;
+      font-size: 19px;
       padding: 0 6px;
     }
 
@@ -163,7 +161,7 @@
     table {
       width: 100%;
       border-collapse: collapse;
-      font-size: 13px;
+      font-size: 12px;
     }
 
     th {
@@ -194,7 +192,7 @@
       color: white;
       border-radius: 8px;
       padding: 10px 20px;
-      font-size: 14px;
+      font-size: 12px;
       font-weight: 700;
     }
 
@@ -219,7 +217,7 @@
     }
 
     .compare-title {
-      font-size: 15px;
+      font-size: 13px;
       font-weight: 700;
       margin-bottom: 14px;
       padding-bottom: 10px;
@@ -227,7 +225,7 @@
     }
 
     .compare-item {
-      font-size: 13px;
+      font-size: 12px;
       padding: 5px 0;
       color: #555;
     }
@@ -256,7 +254,7 @@
       gap: 14px;
       padding: 8px 0;
       border-bottom: 1px solid #eee;
-      font-size: 15px;
+      font-size: 13px;
       color: #333;
       line-height: 1.4;
     }
@@ -264,7 +262,7 @@
     .summary-list li:last-child { border-bottom: none; }
 
     .summary-icon {
-      font-size: 22px;
+      font-size: 19px;
       flex-shrink: 0;
       margin-top: 1px;
     }
@@ -276,8 +274,8 @@
       justify-content: center;
     }
 
-    #slide-1 h1 { color: white; font-size: 38px; }
-    #slide-1 .subtitle { color: rgba(255,255,255,0.75); font-size: 17px; }
+    #slide-1 h1 { color: white; font-size: 34px; }
+    #slide-1 .subtitle { color: rgba(255,255,255,0.75); font-size: 15px; }
     #slide-1 .slide-number { color: rgba(255,255,255,0.4); }
 
     .title-meta {
@@ -290,7 +288,7 @@
       background: rgba(255,255,255,0.12);
       border-radius: 8px;
       padding: 12px 20px;
-      font-size: 13px;
+      font-size: 12px;
       color: rgba(255,255,255,0.9);
     }
 
@@ -443,7 +441,7 @@
 <div class="slide-container">
 
   <!-- スライド 1: タイトル -->
-  <div class="slide active" id="slide-1">
+  <div class="slide" id="slide-1">
     <div class="slide-number">1 / 10</div>
     <div style="margin-bottom: 24px;">
       <div style="font-size: 13px; letter-spacing: 0.12em; color: rgba(255,255,255,0.5); text-transform: uppercase; margin-bottom: 12px;">System Overview</div>
@@ -466,7 +464,7 @@
     <div class="card-grid cols-2" style="gap: 20px;">
       <div class="card" style="padding: 24px;">
         <div class="card-icon">🏪</div>
-        <div class="card-title" style="font-size: 16px; margin-bottom: 10px;">取引先業者（約 150 店舗）</div>
+        <div class="card-title" style="font-size: 14px; margin-bottom: 10px;">取引先業者（約 150 店舗）</div>
         <div class="card-body">
           <div style="padding: 5px 0; border-bottom: 1px solid #dde;">ログイン情報は管理者から受け取る</div>
           <div style="padding: 5px 0; border-bottom: 1px solid #dde;">商品一覧を見てカラー・モデル別に発注数を入力</div>
@@ -477,7 +475,7 @@
       </div>
       <div class="card purple" style="padding: 24px;">
         <div class="card-icon">🧑‍💼</div>
-        <div class="card-title" style="font-size: 16px; margin-bottom: 10px;">管理者（社内担当者）</div>
+        <div class="card-title" style="font-size: 14px; margin-bottom: 10px;">管理者（社内担当者）</div>
         <div class="card-body">
           <div style="padding: 5px 0; border-bottom: 1px solid #e0d0f0;">業者アカウントの登録・編集・無効化</div>
           <div style="padding: 5px 0; border-bottom: 1px solid #e0d0f0;">商品・カラー・モデルの登録・編集・削除</div>
@@ -504,11 +502,9 @@
             <div style="font-weight: 700; color: #0055aa;">🎨 カラー（最大 20 種）</div>
             <div style="padding-left: 16px; color: #444;">カラーコード（例: #FF0000）</div>
             <div style="padding-left: 16px; color: #444;">カラー名（例: レッド）</div>
-            <div style="padding-left: 16px; margin-top: 4px;">
-              <div style="font-weight: 700; color: #003d99;">⚙️ モデル（2 種）</div>
-              <div style="padding-left: 16px; color: #555;">フローティングモデル — 受注可否フラグ</div>
-              <div style="padding-left: 16px; color: #555;">シンキングモデル — 受注可否フラグ</div>
-            </div>
+            <div style="font-weight: 700; color: #003d99;">⚙️ モデル（2 種）</div>
+            <div style="padding-left: 16px; color: #555;">フローティングモデル — 受注可否フラグ</div>
+            <div style="padding-left: 16px; color: #555;">シンキングモデル — 受注可否フラグ</div>
           </div>
         </div>
       </div>
@@ -567,7 +563,7 @@
   <div class="slide" id="slide-5">
     <div class="slide-number">5 / 10</div>
     <div class="tag">画面例 ①</div>
-    <h2 style="font-size: 24px; margin-bottom: 14px;">業者向け：商品発注画面</h2>
+    <h2 style="font-size: 22px; margin-bottom: 14px;">業者向け：商品発注画面</h2>
     <div style="display: flex; gap: 16px; flex: 1; min-height: 0;">
 
       <!-- ワイヤーフレーム -->
@@ -645,7 +641,7 @@
   <div class="slide" id="slide-6">
     <div class="slide-number">6 / 10</div>
     <div class="tag">画面例 ②</div>
-    <h2 style="font-size: 24px; margin-bottom: 14px;">管理者向け：受注管理画面</h2>
+    <h2 style="font-size: 22px; margin-bottom: 14px;">管理者向け：受注管理画面</h2>
     <div style="flex:1; min-height:0;">
 
       <div class="wf-browser" style="height:100%;">
@@ -749,7 +745,7 @@
   </div>
 
   <!-- スライド 7: ログイン方式の比較 -->
-  <div class="slide" id="slide-5">
+  <div class="slide" id="slide-7">
     <div class="slide-number">7 / 10</div>
     <div class="tag">ログイン方式</div>
     <h2>業者のログイン方法：2つの選択肢</h2>
@@ -778,31 +774,31 @@
     </div>
   </div>
 
-  <!-- スライド 6: 管理機能（業者・商品） -->
-  <div class="slide" id="slide-6">
+  <!-- スライド 8: 管理機能（業者・商品） -->
+  <div class="slide" id="slide-8">
     <div class="slide-number">8 / 10</div>
     <div class="tag">管理機能 ①</div>
     <h2>業者管理・商品管理</h2>
     <div class="card-grid cols-2" style="gap: 20px;">
       <div style="background: #f7f9ff; border-radius: 12px; padding: 22px; border-left: 4px solid #0066cc;">
-        <div style="font-size: 16px; font-weight: 700; margin-bottom: 14px;">🏢 業者管理</div>
-        <div style="font-size: 13px; color: #444; line-height: 1.9;">
+        <div style="font-size: 14px; font-weight: 700; margin-bottom: 14px;">🏢 業者管理</div>
+        <div style="font-size: 12px; color: #444; line-height: 1.9;">
           <div>・ 業者の新規登録・情報編集・無効化</div>
           <div>・ ログインコードの生成・再発行・失効処理</div>
           <div>・ 業者ごとの受注履歴の確認</div>
-          <div style="margin-top: 10px; padding: 8px; background: #e8f0ff; border-radius: 6px; font-size: 12px; color: #0055bb;">
+          <div style="margin-top: 10px; padding: 8px; background: #e8f0ff; border-radius: 6px; font-size: 11px; color: #0055bb;">
             業者を「無効化」するとログインが即座にブロックされ、取引終了時の対応が簡単
           </div>
         </div>
       </div>
       <div style="background: #f0fff8; border-radius: 12px; padding: 22px; border-left: 4px solid #00aa66;">
-        <div style="font-size: 16px; font-weight: 700; margin-bottom: 14px;">🎣 商品管理</div>
-        <div style="font-size: 13px; color: #444; line-height: 1.9;">
+        <div style="font-size: 14px; font-weight: 700; margin-bottom: 14px;">🎣 商品管理</div>
+        <div style="font-size: 12px; color: #444; line-height: 1.9;">
           <div>・ 商品の新規登録・編集・削除</div>
           <div>・ カラー・モデルのバリエーション追加・変更</div>
           <div>・ 商品画像のアップロード・差し替え</div>
           <div>・ バリエーションごとの受注停止・再開の切り替え</div>
-          <div style="margin-top: 10px; padding: 8px; background: #d0f5e8; border-radius: 6px; font-size: 12px; color: #006633;">
+          <div style="margin-top: 10px; padding: 8px; background: #d0f5e8; border-radius: 6px; font-size: 11px; color: #006633;">
             在庫切れや生産終了のカラー・モデルだけを個別に受注停止できる細かな制御が可能
           </div>
         </div>
@@ -810,15 +806,15 @@
     </div>
   </div>
 
-  <!-- スライド 7: 管理機能（受注・CSV） -->
-  <div class="slide" id="slide-7">
+  <!-- スライド 9: 管理機能（受注・CSV） -->
+  <div class="slide" id="slide-9">
     <div class="slide-number">9 / 10</div>
     <div class="tag">管理機能 ②</div>
     <h2>受注データ管理・CSV出力</h2>
     <div style="display: flex; gap: 20px;">
       <div style="flex: 1; background: #fff5f0; border-radius: 12px; padding: 20px; border-left: 4px solid #ff6600;">
-        <div style="font-size: 15px; font-weight: 700; margin-bottom: 12px;">📋 受注一覧の閲覧・検索</div>
-        <div style="font-size: 13px; color: #444; line-height: 2;">
+        <div style="font-size: 13px; font-weight: 700; margin-bottom: 12px;">📋 受注一覧の閲覧・検索</div>
+        <div style="font-size: 12px; color: #444; line-height: 2;">
           <div>・ ページネーション付きで全受注を一覧表示</div>
           <div>・ <strong>絞り込み：</strong>受注日時 / 取引先業者 / 商品・カラー・モデル</div>
           <div>・ <strong>ソート：</strong>受注日時、業者名、商品名</div>
@@ -826,7 +822,7 @@
         </div>
       </div>
       <div style="flex: 1;">
-        <div style="font-size: 13px; font-weight: 700; color: #555; margin-bottom: 8px;">📄 CSVフォーマット（出力例）</div>
+        <div style="font-size: 12px; font-weight: 700; color: #555; margin-bottom: 8px;">📄 CSVフォーマット（出力例）</div>
         <table>
           <tr>
             <th>列名</th><th>内容・例</th>
@@ -845,8 +841,8 @@
     </div>
   </div>
 
-  <!-- スライド 8: まとめ -->
-  <div class="slide" id="slide-8">
+  <!-- スライド 10: まとめ -->
+  <div class="slide" id="slide-10">
     <div class="slide-number">10 / 10</div>
     <div class="tag">まとめ</div>
     <h2>システムのポイント</h2>
@@ -880,48 +876,17 @@
 
 </div>
 
-<!-- ナビゲーション -->
-<div class="nav">
-  <button id="prev-btn" onclick="changeSlide(-1)" disabled>←</button>
-  <span class="counter" id="counter">1 / 10</span>
-  <button id="next-btn" onclick="changeSlide(1)">→</button>
-</div>
-
 <script>
-  const SLIDE_W = 900;
-  const SLIDE_H = 560;
-
-  let current = 0;
-  const slides = document.querySelectorAll('.slide');
-  const total = slides.length;
-
-  function scaleSlide() {
-    const gapH = 80;  // 上下の余白（ナビゲーション含む）
-    const gapW = 64;  // 左右の余白
-    const scaleX = (window.innerWidth - gapW) / SLIDE_W;
-    const scaleY = (window.innerHeight - gapH) / SLIDE_H;
-    const scale = Math.min(scaleX, scaleY);
-    slides.forEach(s => { s.style.transform = `scale(${scale})`; });
+  function scaleSlides() {
+    const gap = 80; // 左右各40pxの隙間
+    const baseWidth = 900;
+    const zoom = (window.innerWidth - gap) / baseWidth;
+    document.querySelectorAll('.slide').forEach(s => {
+      s.style.zoom = zoom;
+    });
   }
-
-  function changeSlide(dir) {
-    slides[current].classList.remove('active');
-    current = Math.max(0, Math.min(total - 1, current + dir));
-    slides[current].classList.add('active');
-    scaleSlide();
-    document.getElementById('counter').textContent = `${current + 1} / ${total}`;
-    document.getElementById('prev-btn').disabled = current === 0;
-    document.getElementById('next-btn').disabled = current === total - 1;
-  }
-
-  document.addEventListener('keydown', e => {
-    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') changeSlide(1);
-    if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') changeSlide(-1);
-  });
-
-  window.addEventListener('resize', scaleSlide);
-  scaleSlide();
+  window.addEventListener('resize', scaleSlides);
+  scaleSlides();
 </script>
-
 </body>
 </html>
