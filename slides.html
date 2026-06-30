@@ -1,0 +1,927 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>商品受注サイト（BtoB）説明資料</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Hiragino Sans', 'Yu Gothic', sans-serif;
+      background: #1a1a2e;
+      color: #333;
+    }
+
+    .slide-container {
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .slide {
+      display: none;
+      width: 900px;
+      height: 560px;
+      background: white;
+      border-radius: 16px;
+      padding: 60px 70px;
+      position: relative;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+      transform-origin: center center;
+      flex-shrink: 0;
+    }
+
+    .slide.active { display: flex; flex-direction: column; }
+
+    /* スライドナビゲーション */
+    .nav {
+      position: fixed;
+      bottom: 32px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      background: rgba(255,255,255,0.15);
+      backdrop-filter: blur(10px);
+      padding: 10px 24px;
+      border-radius: 50px;
+    }
+
+    .nav button {
+      background: white;
+      border: none;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      font-size: 18px;
+      cursor: pointer;
+      transition: transform 0.15s;
+    }
+
+    .nav button:hover { transform: scale(1.1); }
+    .nav button:disabled { opacity: 0.3; cursor: default; transform: none; }
+
+    .nav .counter {
+      color: white;
+      font-size: 14px;
+      min-width: 64px;
+      text-align: center;
+    }
+
+    /* スライド共通パーツ */
+    .slide-number {
+      position: absolute;
+      top: 24px;
+      right: 32px;
+      font-size: 12px;
+      color: #aaa;
+      letter-spacing: 0.05em;
+    }
+
+    .tag {
+      display: inline-block;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #0066cc;
+      background: #e8f0ff;
+      padding: 4px 12px;
+      border-radius: 20px;
+      margin-bottom: 20px;
+    }
+
+    h1 { font-size: 36px; font-weight: 800; line-height: 1.25; color: #111; }
+    h2 { font-size: 28px; font-weight: 700; color: #111; margin-bottom: 28px; }
+
+    .subtitle {
+      font-size: 18px;
+      color: #666;
+      margin-top: 12px;
+      line-height: 1.6;
+    }
+
+    /* カード */
+    .card-grid {
+      display: grid;
+      gap: 16px;
+    }
+
+    .card-grid.cols-2 { grid-template-columns: 1fr 1fr; }
+    .card-grid.cols-3 { grid-template-columns: 1fr 1fr 1fr; }
+
+    .card {
+      background: #f7f9ff;
+      border-radius: 12px;
+      padding: 24px;
+      border-left: 4px solid #0066cc;
+    }
+
+    .card.green { border-left-color: #00aa66; background: #f0fff8; }
+    .card.orange { border-left-color: #ff6600; background: #fff5f0; }
+    .card.purple { border-left-color: #6600cc; background: #f8f0ff; }
+
+    .card-icon { font-size: 28px; margin-bottom: 10px; }
+    .card-title { font-size: 15px; font-weight: 700; color: #111; margin-bottom: 6px; }
+    .card-body { font-size: 13px; color: #555; line-height: 1.6; }
+
+    /* フロー図 */
+    .flow {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      flex-wrap: wrap;
+    }
+
+    .flow-step {
+      background: #0066cc;
+      color: white;
+      border-radius: 10px;
+      padding: 14px 18px;
+      font-size: 13px;
+      font-weight: 600;
+      text-align: center;
+      line-height: 1.4;
+      min-width: 110px;
+    }
+
+    .flow-step.highlight {
+      background: #00aa66;
+    }
+
+    .flow-arrow {
+      color: #aaa;
+      font-size: 22px;
+      padding: 0 6px;
+    }
+
+    /* テーブル */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    th {
+      background: #0066cc;
+      color: white;
+      padding: 10px 14px;
+      text-align: left;
+      font-weight: 600;
+    }
+
+    td {
+      padding: 10px 14px;
+      border-bottom: 1px solid #eee;
+    }
+
+    tr:last-child td { border-bottom: none; }
+    tr:nth-child(even) td { background: #f7f9ff; }
+
+    /* ロールバッジ */
+    .role-badge {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 28px;
+    }
+
+    .badge {
+      background: #0066cc;
+      color: white;
+      border-radius: 8px;
+      padding: 10px 20px;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .badge.secondary { background: #666; }
+
+    /* 比較カード */
+    .compare-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    .compare-card {
+      border-radius: 12px;
+      padding: 24px;
+      border: 2px solid #ddd;
+    }
+
+    .compare-card.recommended {
+      border-color: #00aa66;
+      background: #f0fff8;
+    }
+
+    .compare-title {
+      font-size: 15px;
+      font-weight: 700;
+      margin-bottom: 14px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #ddd;
+    }
+
+    .compare-item {
+      font-size: 13px;
+      padding: 5px 0;
+      color: #555;
+    }
+
+    .compare-item::before { margin-right: 8px; }
+    .pro::before { content: '✅'; }
+    .con::before { content: '⚠️'; }
+
+    /* タイトルスライド装飾 */
+    .title-accent {
+      width: 60px;
+      height: 6px;
+      background: linear-gradient(90deg, #0066cc, #00aaff);
+      border-radius: 3px;
+      margin-bottom: 24px;
+    }
+
+    /* まとめスライド */
+    .summary-list {
+      list-style: none;
+    }
+
+    .summary-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      padding: 8px 0;
+      border-bottom: 1px solid #eee;
+      font-size: 15px;
+      color: #333;
+      line-height: 1.4;
+    }
+
+    .summary-list li:last-child { border-bottom: none; }
+
+    .summary-icon {
+      font-size: 22px;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    /* タイトルスライド */
+    #slide-1 {
+      background: linear-gradient(135deg, #0a2540 0%, #0066cc 100%);
+      color: white;
+      justify-content: center;
+    }
+
+    #slide-1 h1 { color: white; font-size: 38px; }
+    #slide-1 .subtitle { color: rgba(255,255,255,0.75); font-size: 17px; }
+    #slide-1 .slide-number { color: rgba(255,255,255,0.4); }
+
+    .title-meta {
+      margin-top: 40px;
+      display: flex;
+      gap: 24px;
+    }
+
+    .meta-item {
+      background: rgba(255,255,255,0.12);
+      border-radius: 8px;
+      padding: 12px 20px;
+      font-size: 13px;
+      color: rgba(255,255,255,0.9);
+    }
+
+    .meta-label {
+      font-size: 11px;
+      color: rgba(255,255,255,0.5);
+      margin-bottom: 4px;
+      letter-spacing: 0.05em;
+    }
+
+    /* ── ワイヤーフレーム共通 ── */
+    .wf-browser {
+      border: 1.5px solid #ccc;
+      border-radius: 8px;
+      overflow: hidden;
+      background: #fff;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .wf-chrome {
+      background: #e5e5e5;
+      padding: 5px 8px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      flex-shrink: 0;
+      border-bottom: 1px solid #ccc;
+    }
+
+    .wf-chrome .dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+
+    .wf-url {
+      flex: 1;
+      background: white;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      padding: 2px 10px;
+      font-size: 10px;
+      color: #777;
+      margin: 0 6px;
+    }
+
+    .wf-topnav {
+      background: #0a2540;
+      color: white;
+      padding: 7px 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-shrink: 0;
+    }
+
+    .wf-topnav .logo { font-size: 12px; font-weight: 700; }
+
+    .wf-btn-wf {
+      display: inline-flex;
+      align-items: center;
+      background: #0066cc;
+      color: white;
+      padding: 4px 12px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 600;
+      cursor: default;
+    }
+
+    .wf-btn-wf.green { background: #00aa66; }
+
+    .wf-btn-ghost {
+      background: transparent;
+      border: 1px solid rgba(255,255,255,0.4);
+      color: rgba(255,255,255,0.9);
+      font-size: 10px;
+      padding: 3px 8px;
+      border-radius: 4px;
+    }
+
+    .wf-input-cell {
+      display: inline-block;
+      border: 1px solid #b0b8cc;
+      border-radius: 3px;
+      padding: 2px 0;
+      width: 40px;
+      text-align: center;
+      font-size: 11px;
+      background: #fff;
+      color: #333;
+    }
+
+    .wf-input-cell.disabled {
+      background: #efefef;
+      color: #bbb;
+      border-color: #ddd;
+      font-size: 9px;
+    }
+
+    .wf-swatch {
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      border: 1px solid rgba(0,0,0,0.2);
+      vertical-align: middle;
+      margin-right: 4px;
+    }
+
+    .wf-callout {
+      border-radius: 8px;
+      padding: 10px 14px;
+    }
+
+    .wf-callout .cq-title { font-size: 12px; font-weight: 700; margin-bottom: 4px; }
+    .wf-callout .cq-body  { font-size: 11px; color: #444; line-height: 1.5; }
+
+    .wf-sidebar {
+      width: 90px;
+      background: #0a2540;
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .wf-sidebar .menu-label {
+      padding: 8px 10px 4px;
+      font-size: 9px;
+      color: rgba(255,255,255,0.4);
+      letter-spacing: 0.08em;
+    }
+
+    .wf-sidebar .menu-item {
+      padding: 7px 10px;
+      font-size: 10.5px;
+      color: rgba(255,255,255,0.6);
+      cursor: default;
+      white-space: nowrap;
+    }
+
+    .wf-sidebar .menu-item.active {
+      background: rgba(255,255,255,0.12);
+      color: white;
+      border-left: 2px solid #00aaff;
+      padding-left: 8px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="slide-container">
+
+  <!-- スライド 1: タイトル -->
+  <div class="slide active" id="slide-1">
+    <div class="slide-number">1 / 10</div>
+    <div style="margin-bottom: 24px;">
+      <div style="font-size: 13px; letter-spacing: 0.12em; color: rgba(255,255,255,0.5); text-transform: uppercase; margin-bottom: 12px;">System Overview</div>
+      <h1>ガンクラフト様向け<br>BtoB 商品受注サイト</h1>
+      <p class="subtitle" style="margin-top: 16px;">取引先業者（小売店・販売店）がオンラインでルアーを発注できる<br>専用の受注管理システム。電話・FAX・メールによる受注業務をWeb化し、受注データを一元管理する。</p>
+    </div>
+    <div class="title-meta">
+      <div class="meta-item"><div class="meta-label">対象業者数</div>約 150 店舗</div>
+      <div class="meta-item"><div class="meta-label">取扱商品</div>ルアー 約 60 種類</div>
+      <div class="meta-item"><div class="meta-label">バリエーション</div>カラー×モデル 最大 40 種／商品</div>
+      <div class="meta-item"><div class="meta-label">決済</div>なし（受注データ管理のみ）</div>
+    </div>
+  </div>
+
+  <!-- スライド 2: ユーザー -->
+  <div class="slide" id="slide-2">
+    <div class="slide-number">2 / 10</div>
+    <div class="tag">ユーザー</div>
+    <h2>システム利用者</h2>
+    <div class="card-grid cols-2" style="gap: 20px;">
+      <div class="card" style="padding: 24px;">
+        <div class="card-icon">🏪</div>
+        <div class="card-title" style="font-size: 16px; margin-bottom: 10px;">取引先業者（約 150 店舗）</div>
+        <div class="card-body">
+          <div style="padding: 5px 0; border-bottom: 1px solid #dde;">ログイン情報は管理者から受け取る</div>
+          <div style="padding: 5px 0; border-bottom: 1px solid #dde;">商品一覧を見てカラー・モデル別に発注数を入力</div>
+          <div style="padding: 5px 0; border-bottom: 1px solid #dde;">注文内容を確認して送信</div>
+          <div style="padding: 5px 0; border-bottom: 1px solid #dde;">自分の注文履歴を確認（他社の履歴は見えない）</div>
+          <div style="padding: 5px 0;">受注停止中の商品は発注不可</div>
+        </div>
+      </div>
+      <div class="card purple" style="padding: 24px;">
+        <div class="card-icon">🧑‍💼</div>
+        <div class="card-title" style="font-size: 16px; margin-bottom: 10px;">管理者（社内担当者）</div>
+        <div class="card-body">
+          <div style="padding: 5px 0; border-bottom: 1px solid #e0d0f0;">業者アカウントの登録・編集・無効化</div>
+          <div style="padding: 5px 0; border-bottom: 1px solid #e0d0f0;">商品・カラー・モデルの登録・編集・削除</div>
+          <div style="padding: 5px 0; border-bottom: 1px solid #e0d0f0;">各バリエーションの受注可否を切り替え</div>
+          <div style="padding: 5px 0; border-bottom: 1px solid #e0d0f0;">全業者の受注データを横断的に閲覧・検索</div>
+          <div style="padding: 5px 0;">CSVエクスポートで外部処理（請求・出荷）へ連携</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- スライド 3: 商品データ構造 -->
+  <div class="slide" id="slide-3">
+    <div class="slide-number">3 / 10</div>
+    <div class="tag">商品データ</div>
+    <h2>商品（ルアー）のデータ構造</h2>
+    <div style="display: flex; gap: 24px; align-items: flex-start;">
+      <div style="flex: 1;">
+        <div style="background: #f0f4ff; border-radius: 12px; padding: 20px; font-size: 13px; line-height: 2;">
+          <div style="font-weight: 700; color: #0066cc; margin-bottom: 6px;">📦 商品（ルアー）</div>
+          <div style="padding-left: 16px; color: #444;">商品名 / 説明文</div>
+          <div style="padding-left: 16px; color: #444;">商品画像（複数枚アップロード可）</div>
+          <div style="padding-left: 16px; margin-top: 4px;">
+            <div style="font-weight: 700; color: #0055aa;">🎨 カラー（最大 20 種）</div>
+            <div style="padding-left: 16px; color: #444;">カラーコード（例: #FF0000）</div>
+            <div style="padding-left: 16px; color: #444;">カラー名（例: レッド）</div>
+            <div style="padding-left: 16px; margin-top: 4px;">
+              <div style="font-weight: 700; color: #003d99;">⚙️ モデル（2 種）</div>
+              <div style="padding-left: 16px; color: #555;">フローティングモデル — 受注可否フラグ</div>
+              <div style="padding-left: 16px; color: #555;">シンキングモデル — 受注可否フラグ</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div style="flex: 1; display: flex; flex-direction: column; gap: 12px;">
+        <div class="card green">
+          <div class="card-title">最大バリエーション数</div>
+          <div class="card-body">カラー 20種 × モデル 2種 = <strong>最大 40 バリエーション / 商品</strong><br>各バリエーションに受注可否フラグを設定できる</div>
+        </div>
+        <div class="card orange">
+          <div class="card-title">受注可否フラグとは</div>
+          <div class="card-body">管理者が特定カラー・モデルの受注を停止できる仕組み。在庫切れや生産終了時に即座に対応可能。停止中は業者の発注画面に表示されない。</div>
+        </div>
+        <div class="card">
+          <div class="card-title">商品画像</div>
+          <div class="card-body">1商品につき複数枚のアップロード・差し替えに対応。業者が商品を視覚的に確認しながら発注できる。</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- スライド 4: 受注フロー -->
+  <div class="slide" id="slide-4">
+    <div class="slide-number">4 / 10</div>
+    <div class="tag">受注フロー</div>
+    <h2>注文から処理までの流れ</h2>
+    <div class="flow" style="margin-bottom: 24px; gap: 6px;">
+      <div class="flow-step">①<br>業者がログイン</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">②<br>商品一覧を閲覧</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">③<br>カラー・モデルごとに<br>数量を入力</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">④<br>内容確認・<br>注文送信</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step highlight">⑤<br>管理画面に<br>受注データ登録</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step highlight">⑥<br>CSV出力・<br>外部で請求/出荷</div>
+    </div>
+    <div class="card-grid cols-3" style="gap: 12px;">
+      <div class="card" style="border-left-color: #0066cc;">
+        <div class="card-title">① ログイン</div>
+        <div class="card-body">管理者から受け取ったログイン情報でアクセス。自社の発注画面のみ表示される。</div>
+      </div>
+      <div class="card" style="border-left-color: #0066cc;">
+        <div class="card-title">③ 発注数入力</div>
+        <div class="card-body">各商品のカラー × モデルごとに数量を入力。受注停止中のバリエーションは入力不可。</div>
+      </div>
+      <div class="card" style="border-left-color: #00aa66; background: #f0fff8;">
+        <div class="card-title">⑥ CSV出力</div>
+        <div class="card-body">管理者が受注データをCSVでダウンロード。既存の請求・出荷業務フローにそのまま渡せる。</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- スライド 5: 画面例①（業者向け発注画面） -->
+  <div class="slide" id="slide-5">
+    <div class="slide-number">5 / 10</div>
+    <div class="tag">画面例 ①</div>
+    <h2 style="font-size: 24px; margin-bottom: 14px;">業者向け：商品発注画面</h2>
+    <div style="display: flex; gap: 16px; flex: 1; min-height: 0;">
+
+      <!-- ワイヤーフレーム -->
+      <div class="wf-browser" style="flex: 3;">
+        <div class="wf-chrome">
+          <span class="dot" style="background:#ff5f57;"></span>
+          <span class="dot" style="background:#febc2e;"></span>
+          <span class="dot" style="background:#28c840;"></span>
+          <div class="wf-url">order.guncraft.jp/products</div>
+        </div>
+        <div class="wf-topnav">
+          <span class="logo">🎣 ガンクラフト 受注サイト</span>
+          <div style="display:flex; align-items:center; gap:8px;">
+            <span style="font-size:10px; opacity:0.65;">〇〇釣具店 様</span>
+            <div class="wf-btn-ghost">ログアウト</div>
+          </div>
+        </div>
+        <div style="padding: 10px 12px; overflow: hidden;">
+          <!-- 商品カード -->
+          <div style="border:1px solid #dde; border-radius:6px; padding:10px; display:flex; gap:10px; align-items:flex-start; margin-bottom:8px;">
+            <div style="width:68px; height:72px; background:#e8eaf0; border:1px solid #ccc; border-radius:5px; display:flex; align-items:center; justify-content:center; font-size:22px; flex-shrink:0;">🎣</div>
+            <div style="flex:1;">
+              <div style="font-size:13px; font-weight:700; color:#111; margin-bottom:8px;">スーパールアー Pro</div>
+              <table style="font-size:11px; border-collapse:collapse; width:100%;">
+                <tr>
+                  <th style="background:#f0f4ff; padding:4px 8px; border:1px solid #dde; text-align:left; width:30%;">カラー</th>
+                  <th style="background:#f0f4ff; padding:4px 8px; border:1px solid #dde; text-align:center;">フローティング</th>
+                  <th style="background:#f0f4ff; padding:4px 8px; border:1px solid #dde; text-align:center;">シンキング</th>
+                </tr>
+                <tr>
+                  <td style="padding:4px 8px; border:1px solid #eee;"><span class="wf-swatch" style="background:#E53935;"></span>レッド</td>
+                  <td style="padding:4px 8px; border:1px solid #eee; text-align:center;"><span class="wf-input-cell">10</span></td>
+                  <td style="padding:4px 8px; border:1px solid #eee; text-align:center;"><span class="wf-input-cell">5</span></td>
+                </tr>
+                <tr style="background:#fafafa;">
+                  <td style="padding:4px 8px; border:1px solid #eee;"><span class="wf-swatch" style="background:#1565C0;"></span>ブルー</td>
+                  <td style="padding:4px 8px; border:1px solid #eee; text-align:center;"><span class="wf-input-cell">3</span></td>
+                  <td style="padding:4px 8px; border:1px solid #eee; text-align:center;"><span class="wf-input-cell disabled">受注停止</span></td>
+                </tr>
+                <tr>
+                  <td style="padding:4px 8px; border:1px solid #eee;"><span class="wf-swatch" style="background:#2E7D32;"></span>グリーン</td>
+                  <td style="padding:4px 8px; border:1px solid #eee; text-align:center;"><span class="wf-input-cell">0</span></td>
+                  <td style="padding:4px 8px; border:1px solid #eee; text-align:center;"><span class="wf-input-cell">0</span></td>
+                </tr>
+              </table>
+            </div>
+          </div>
+          <!-- 送信ボタン -->
+          <div style="display:flex; justify-content:flex-end;">
+            <div class="wf-btn-wf" style="font-size:12px; padding:6px 18px;">注文を確認する →</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- アノテーション -->
+      <div style="flex:2; display:flex; flex-direction:column; gap:10px; justify-content:center;">
+        <div class="wf-callout" style="background:#e8f0ff; border-left:3px solid #0066cc;">
+          <div class="cq-title" style="color:#0044aa;">① カラー × モデルで数量入力</div>
+          <div class="cq-body">各セルに数量を直接入力。複数商品をまとめて入力してから一括送信できる。</div>
+        </div>
+        <div class="wf-callout" style="background:#fff0f0; border-left:3px solid #cc3333;">
+          <div class="cq-title" style="color:#aa0000;">② 受注停止中はグレーアウト</div>
+          <div class="cq-body">在庫切れ・生産終了のバリエーションは表示されるが入力不可。誤発注を防止。</div>
+        </div>
+        <div class="wf-callout" style="background:#f0fff8; border-left:3px solid #00aa66;">
+          <div class="cq-title" style="color:#007744;">③ 自社の情報のみ表示</div>
+          <div class="cq-body">ログイン中の業者専用の発注画面。他社の注文や情報は一切閲覧不可。</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- スライド 6: 画面例②（管理者向け受注管理） -->
+  <div class="slide" id="slide-6">
+    <div class="slide-number">6 / 10</div>
+    <div class="tag">画面例 ②</div>
+    <h2 style="font-size: 24px; margin-bottom: 14px;">管理者向け：受注管理画面</h2>
+    <div style="flex:1; min-height:0;">
+
+      <div class="wf-browser" style="height:100%;">
+        <div class="wf-chrome">
+          <span class="dot" style="background:#ff5f57;"></span>
+          <span class="dot" style="background:#febc2e;"></span>
+          <span class="dot" style="background:#28c840;"></span>
+          <div class="wf-url">order.guncraft.jp/admin/orders</div>
+        </div>
+        <div style="display:flex; overflow:hidden; flex:1;">
+
+          <!-- サイドバー -->
+          <div class="wf-sidebar">
+            <div class="menu-label">ADMIN</div>
+            <div class="menu-item">👥 業者管理</div>
+            <div class="menu-item">🎣 商品管理</div>
+            <div class="menu-item active">📋 受注管理</div>
+            <div class="menu-item">⚙️ 設定</div>
+          </div>
+
+          <!-- メインコンテンツ -->
+          <div style="flex:1; padding:12px; background:#f5f7ff; overflow:hidden;">
+
+            <!-- フィルターバー -->
+            <div style="display:flex; gap:6px; align-items:center; margin-bottom:10px; flex-wrap:wrap;">
+              <select style="font-size:11px; padding:4px 8px; border:1px solid #ccc; border-radius:4px; background:white; color:#333;">
+                <option>受注日：全期間</option>
+              </select>
+              <select style="font-size:11px; padding:4px 8px; border:1px solid #ccc; border-radius:4px; background:white; color:#333;">
+                <option>業者：すべて</option>
+              </select>
+              <select style="font-size:11px; padding:4px 8px; border:1px solid #ccc; border-radius:4px; background:white; color:#333;">
+                <option>商品：すべて</option>
+              </select>
+              <div class="wf-btn-wf green" style="margin-left:auto; font-size:11px; padding:4px 14px;">↓ CSV出力</div>
+            </div>
+
+            <!-- テーブル -->
+            <table style="width:100%; font-size:11px; border-collapse:collapse; background:white; border-radius:6px; overflow:hidden; box-shadow:0 1px 4px rgba(0,0,0,0.06);">
+              <tr>
+                <th style="background:#0066cc; color:white; padding:6px 10px; text-align:left; font-weight:600;">受注日時</th>
+                <th style="background:#0066cc; color:white; padding:6px 10px; text-align:left; font-weight:600;">業者名</th>
+                <th style="background:#0066cc; color:white; padding:6px 10px; text-align:left; font-weight:600;">商品名</th>
+                <th style="background:#0066cc; color:white; padding:6px 10px; text-align:left; font-weight:600;">カラー</th>
+                <th style="background:#0066cc; color:white; padding:6px 10px; text-align:left; font-weight:600;">モデル</th>
+                <th style="background:#0066cc; color:white; padding:6px 10px; text-align:center; font-weight:600;">数量</th>
+              </tr>
+              <tr>
+                <td style="padding:6px 10px; border-bottom:1px solid #eee;">06-30 10:23</td>
+                <td style="padding:6px 10px; border-bottom:1px solid #eee;">〇〇釣具店</td>
+                <td style="padding:6px 10px; border-bottom:1px solid #eee;">スーパールアー Pro</td>
+                <td style="padding:6px 10px; border-bottom:1px solid #eee;"><span class="wf-swatch" style="background:#E53935;"></span>レッド</td>
+                <td style="padding:6px 10px; border-bottom:1px solid #eee;">フローティング</td>
+                <td style="padding:6px 10px; border-bottom:1px solid #eee; text-align:center; font-weight:600;">10</td>
+              </tr>
+              <tr style="background:#f7f9ff;">
+                <td style="padding:6px 10px; border-bottom:1px solid #eee;">06-30 10:23</td>
+                <td style="padding:6px 10px; border-bottom:1px solid #eee;">〇〇釣具店</td>
+                <td style="padding:6px 10px; border-bottom:1px solid #eee;">スーパールアー Pro</td>
+                <td style="padding:6px 10px; border-bottom:1px solid #eee;"><span class="wf-swatch" style="background:#1565C0;"></span>ブルー</td>
+                <td style="padding:6px 10px; border-bottom:1px solid #eee;">フローティング</td>
+                <td style="padding:6px 10px; border-bottom:1px solid #eee; text-align:center; font-weight:600;">3</td>
+              </tr>
+              <tr>
+                <td style="padding:6px 10px; border-bottom:1px solid #eee;">06-29 15:40</td>
+                <td style="padding:6px 10px; border-bottom:1px solid #eee;">△△スポーツ</td>
+                <td style="padding:6px 10px; border-bottom:1px solid #eee;">スーパールアー Pro</td>
+                <td style="padding:6px 10px; border-bottom:1px solid #eee;"><span class="wf-swatch" style="background:#E53935;"></span>レッド</td>
+                <td style="padding:6px 10px; border-bottom:1px solid #eee;">シンキング</td>
+                <td style="padding:6px 10px; border-bottom:1px solid #eee; text-align:center; font-weight:600;">5</td>
+              </tr>
+              <tr style="background:#f7f9ff;">
+                <td style="padding:6px 10px; border-bottom:1px solid #eee;">06-29 09:15</td>
+                <td style="padding:6px 10px; border-bottom:1px solid #eee;">○○マリン</td>
+                <td style="padding:6px 10px; border-bottom:1px solid #eee;">ミノー Light</td>
+                <td style="padding:6px 10px; border-bottom:1px solid #eee;"><span class="wf-swatch" style="background:#2E7D32;"></span>グリーン</td>
+                <td style="padding:6px 10px; border-bottom:1px solid #eee;">フローティング</td>
+                <td style="padding:6px 10px; border-bottom:1px solid #eee; text-align:center; font-weight:600;">20</td>
+              </tr>
+              <tr>
+                <td style="padding:6px 10px;">06-28 11:05</td>
+                <td style="padding:6px 10px;">△△スポーツ</td>
+                <td style="padding:6px 10px;">ミノー Light</td>
+                <td style="padding:6px 10px;"><span class="wf-swatch" style="background:#F57F17;"></span>オレンジ</td>
+                <td style="padding:6px 10px;">シンキング</td>
+                <td style="padding:6px 10px; text-align:center; font-weight:600;">12</td>
+              </tr>
+            </table>
+
+            <!-- ページネーション -->
+            <div style="display:flex; justify-content:center; align-items:center; gap:8px; margin-top:10px; font-size:11px; color:#666;">
+              <div style="padding:3px 10px; border:1px solid #ccc; border-radius:4px; background:white;">← 前</div>
+              <span style="color:#333; font-weight:600;">1 / 12 ページ</span>
+              <div style="padding:3px 10px; border:1px solid #ccc; border-radius:4px; background:white;">次 →</div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- スライド 7: ログイン方式の比較 -->
+  <div class="slide" id="slide-5">
+    <div class="slide-number">7 / 10</div>
+    <div class="tag">ログイン方式</div>
+    <h2>業者のログイン方法：2つの選択肢</h2>
+    <div class="compare-grid" style="margin-bottom: 16px;">
+      <div class="compare-card">
+        <div class="compare-title">案 A：ログインコード方式</div>
+        <div style="font-size: 12px; color: #888; margin-bottom: 10px;">管理者が発行した固有コードでログイン</div>
+        <div class="compare-item pro">業者側にアカウント登録の手間がかからない</div>
+        <div class="compare-item pro">メールアドレスを持たない業者でも利用できる</div>
+        <div class="compare-item" style="height: 8px;"></div>
+        <div class="compare-item con">コード変更のたびに管理者が再発行して業者に連絡</div>
+        <div class="compare-item con">コードを第三者に渡された場合の不正利用リスク</div>
+      </div>
+      <div class="compare-card recommended">
+        <div class="compare-title">案 B：メール ＋ パスワード方式</div>
+        <div style="font-size: 12px; color: #009955; margin-bottom: 10px;">一般的なWebサービスと同じ方式</div>
+        <div class="compare-item pro">業者自身でパスワードの変更・リセットが完結</div>
+        <div class="compare-item pro">管理者の運用負荷が低く、問い合わせが減る</div>
+        <div class="compare-item pro">業者にとって操作が直感的で馴染みやすい</div>
+        <div class="compare-item" style="height: 8px;"></div>
+        <div class="compare-item con">初回のみメールアドレスの登録が必要</div>
+      </div>
+    </div>
+    <div style="font-size: 12px; color: #888; text-align: center; background: #f7f7f7; padding: 8px; border-radius: 8px;">
+      ※ どちらの方式を採用するかはご要望に応じて決定します。後からの変更も対応可能です。
+    </div>
+  </div>
+
+  <!-- スライド 6: 管理機能（業者・商品） -->
+  <div class="slide" id="slide-6">
+    <div class="slide-number">8 / 10</div>
+    <div class="tag">管理機能 ①</div>
+    <h2>業者管理・商品管理</h2>
+    <div class="card-grid cols-2" style="gap: 20px;">
+      <div style="background: #f7f9ff; border-radius: 12px; padding: 22px; border-left: 4px solid #0066cc;">
+        <div style="font-size: 16px; font-weight: 700; margin-bottom: 14px;">🏢 業者管理</div>
+        <div style="font-size: 13px; color: #444; line-height: 1.9;">
+          <div>・ 業者の新規登録・情報編集・無効化</div>
+          <div>・ ログインコードの生成・再発行・失効処理</div>
+          <div>・ 業者ごとの受注履歴の確認</div>
+          <div style="margin-top: 10px; padding: 8px; background: #e8f0ff; border-radius: 6px; font-size: 12px; color: #0055bb;">
+            業者を「無効化」するとログインが即座にブロックされ、取引終了時の対応が簡単
+          </div>
+        </div>
+      </div>
+      <div style="background: #f0fff8; border-radius: 12px; padding: 22px; border-left: 4px solid #00aa66;">
+        <div style="font-size: 16px; font-weight: 700; margin-bottom: 14px;">🎣 商品管理</div>
+        <div style="font-size: 13px; color: #444; line-height: 1.9;">
+          <div>・ 商品の新規登録・編集・削除</div>
+          <div>・ カラー・モデルのバリエーション追加・変更</div>
+          <div>・ 商品画像のアップロード・差し替え</div>
+          <div>・ バリエーションごとの受注停止・再開の切り替え</div>
+          <div style="margin-top: 10px; padding: 8px; background: #d0f5e8; border-radius: 6px; font-size: 12px; color: #006633;">
+            在庫切れや生産終了のカラー・モデルだけを個別に受注停止できる細かな制御が可能
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- スライド 7: 管理機能（受注・CSV） -->
+  <div class="slide" id="slide-7">
+    <div class="slide-number">9 / 10</div>
+    <div class="tag">管理機能 ②</div>
+    <h2>受注データ管理・CSV出力</h2>
+    <div style="display: flex; gap: 20px;">
+      <div style="flex: 1; background: #fff5f0; border-radius: 12px; padding: 20px; border-left: 4px solid #ff6600;">
+        <div style="font-size: 15px; font-weight: 700; margin-bottom: 12px;">📋 受注一覧の閲覧・検索</div>
+        <div style="font-size: 13px; color: #444; line-height: 2;">
+          <div>・ ページネーション付きで全受注を一覧表示</div>
+          <div>・ <strong>絞り込み：</strong>受注日時 / 取引先業者 / 商品・カラー・モデル</div>
+          <div>・ <strong>ソート：</strong>受注日時、業者名、商品名</div>
+          <div>・ CSVは「全件」または「フィルタ結果のみ」を選択して出力</div>
+        </div>
+      </div>
+      <div style="flex: 1;">
+        <div style="font-size: 13px; font-weight: 700; color: #555; margin-bottom: 8px;">📄 CSVフォーマット（出力例）</div>
+        <table>
+          <tr>
+            <th>列名</th><th>内容・例</th>
+          </tr>
+          <tr><td>受注日時</td><td>2026-06-30 10:00:00</td></tr>
+          <tr><td>業者コード</td><td>B001</td></tr>
+          <tr><td>業者名</td><td>〇〇釣具店</td></tr>
+          <tr><td>商品コード</td><td>L042</td></tr>
+          <tr><td>商品名</td><td>スーパールアー Pro</td></tr>
+          <tr><td>カラーコード</td><td>#FF0000</td></tr>
+          <tr><td>カラー名</td><td>レッド</td></tr>
+          <tr><td>モデル</td><td>フローティング</td></tr>
+          <tr><td>数量</td><td>10</td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- スライド 8: まとめ -->
+  <div class="slide" id="slide-8">
+    <div class="slide-number">10 / 10</div>
+    <div class="tag">まとめ</div>
+    <h2>システムのポイント</h2>
+    <ul class="summary-list">
+      <li>
+        <span class="summary-icon">🔐</span>
+        <div><strong>クローズドな BtoB サイト</strong>：事前登録済みの取引先業者のみがアクセス可能。業者間でデータが見えないセキュアな設計。</div>
+      </li>
+      <li>
+        <span class="summary-icon">🎨</span>
+        <div><strong>カラー × モデルのバリエーション発注</strong>：ルアー1商品あたり最大40バリエーション（カラー20種 × モデル2種）を個別に発注できる。</div>
+      </li>
+      <li>
+        <span class="summary-icon">🚦</span>
+        <div><strong>バリエーション単位の受注コントロール</strong>：管理者が特定のカラー・モデルだけを受注停止できる。在庫切れ・生産終了に即対応。</div>
+      </li>
+      <li>
+        <span class="summary-icon">📊</span>
+        <div><strong>CSV 出力で既存業務とシームレス連携</strong>：絞り込んだ受注データをそのままCSVでダウンロード。既存の請求・出荷フローに渡せる。</div>
+      </li>
+      <li>
+        <span class="summary-icon">💳</span>
+        <div><strong>決済機能なし</strong>：受注データの管理に特化。決済・出荷は既存の外部フローで処理するためシステムをシンプルに保てる。</div>
+      </li>
+      <li>
+        <span class="summary-icon">🌐</span>
+        <div><strong>独自ドメインでの運用も可能</strong>：必要に応じて自社ブランドの独自ドメイン（例: order.example.co.jp）を取得・設定できる。</div>
+      </li>
+    </ul>
+  </div>
+
+</div>
+
+<!-- ナビゲーション -->
+<div class="nav">
+  <button id="prev-btn" onclick="changeSlide(-1)" disabled>←</button>
+  <span class="counter" id="counter">1 / 10</span>
+  <button id="next-btn" onclick="changeSlide(1)">→</button>
+</div>
+
+<script>
+  const SLIDE_W = 900;
+  const SLIDE_H = 560;
+
+  let current = 0;
+  const slides = document.querySelectorAll('.slide');
+  const total = slides.length;
+
+  function scaleSlide() {
+    const gapH = 80;  // 上下の余白（ナビゲーション含む）
+    const gapW = 64;  // 左右の余白
+    const scaleX = (window.innerWidth - gapW) / SLIDE_W;
+    const scaleY = (window.innerHeight - gapH) / SLIDE_H;
+    const scale = Math.min(scaleX, scaleY);
+    slides.forEach(s => { s.style.transform = `scale(${scale})`; });
+  }
+
+  function changeSlide(dir) {
+    slides[current].classList.remove('active');
+    current = Math.max(0, Math.min(total - 1, current + dir));
+    slides[current].classList.add('active');
+    scaleSlide();
+    document.getElementById('counter').textContent = `${current + 1} / ${total}`;
+    document.getElementById('prev-btn').disabled = current === 0;
+    document.getElementById('next-btn').disabled = current === total - 1;
+  }
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') changeSlide(1);
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') changeSlide(-1);
+  });
+
+  window.addEventListener('resize', scaleSlide);
+  scaleSlide();
+</script>
+
+</body>
+</html>
